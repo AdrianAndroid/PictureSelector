@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.luck.picture.lib.BuildConfig;
 import com.luck.picture.lib.R;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -21,8 +22,10 @@ import com.luck.picture.lib.tools.MediaUtils;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.SdkVersionUtils;
 import com.luck.picture.lib.tools.ValueOf;
+import com.yalantis.ucrop.L;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +42,7 @@ import java.util.Set;
 public final class LocalMediaPageLoader {
     private static final String TAG = LocalMediaPageLoader.class.getSimpleName();
 
-    private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
+    private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external"); // URI
     private static final String ORDER_BY = MediaStore.Files.FileColumns._ID + " DESC";
     private static final String NOT_GIF_UNKNOWN = "!='image/*'";
     private static final String NOT_GIF = "!='image/gif' AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF_UNKNOWN;
@@ -387,19 +390,37 @@ public final class LocalMediaPageLoader {
      * @param listener
      */
     public void loadAllMedia(OnQueryDataResultListener<LocalMediaFolder> listener) {
+        // 通过子线程加载
         PictureThreadUtils.executeByIo(new PictureThreadUtils.SimpleTask<List<LocalMediaFolder>>() {
             @Override
             public List<LocalMediaFolder> doInBackground() {
-                Cursor data = mContext.getContentResolver().query(QUERY_URI,
-                        SdkVersionUtils.checkedAndroid_Q() ? PROJECTION_29 : PROJECTION,
-                        getSelection(), getSelectionArgs(), ORDER_BY);
+
+                final Uri uri = QUERY_URI;
+                final String[] projection = SdkVersionUtils.checkedAndroid_Q() ? PROJECTION_29 : PROJECTION;
+                final String selection = getSelection();
+                final String[] selectionArgs = getSelectionArgs();
+                final String sortOrder = ORDER_BY;
+                if (BuildConfig.DEBUG) {
+                    L.m(null, "uri", uri);
+                    L.m(null, "projection", Arrays.toString(projection));
+                    L.m(null, "selection", selection);
+                    L.m(null, "selectionArgs", Arrays.toString(selectionArgs));
+                    L.m(null, "sortOrder", sortOrder);
+                }
+                Cursor data = mContext.getContentResolver().query(
+                        uri,           // 数据资源路径
+                        projection,    // 查询的列
+                        selection,     // 查询的条件
+                        selectionArgs, // 条件填充值
+                        sortOrder      // 排序依据
+                );
                 try {
                     if (data != null) {
                         int count = data.getCount();
                         int totalCount = 0;
                         List<LocalMediaFolder> mediaFolders = new ArrayList<>();
                         if (count > 0) {
-                            if (SdkVersionUtils.checkedAndroid_Q()) {
+                            if (SdkVersionUtils.checkedAndroid_Q()) { // Android Q及以上
                                 Map<Long, Long> countMap = new HashMap<>();
                                 while (data.moveToNext()) {
                                     long bucketId = data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID));
@@ -421,8 +442,7 @@ public final class LocalMediaPageLoader {
                                         }
                                         LocalMediaFolder mediaFolder = new LocalMediaFolder();
                                         mediaFolder.setBucketId(bucketId);
-                                        String bucketDisplayName = data.getString(
-                                                data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
+                                        String bucketDisplayName = data.getString(data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
                                         long size = countMap.get(bucketId);
                                         long id = data.getLong(data.getColumnIndex(MediaStore.Files.FileColumns._ID));
                                         mediaFolder.setName(bucketDisplayName);
@@ -434,7 +454,7 @@ public final class LocalMediaPageLoader {
                                     } while (data.moveToNext());
                                 }
 
-                            } else {
+                            } else { // 旧版本
                                 data.moveToFirst();
                                 do {
                                     LocalMediaFolder mediaFolder = new LocalMediaFolder();
@@ -451,7 +471,7 @@ public final class LocalMediaPageLoader {
                                 } while (data.moveToNext());
                             }
 
-                            sortFolder(mediaFolders);
+                            sortFolder(mediaFolders); // 排序文件夹
 
                             // 相机胶卷
                             LocalMediaFolder allMediaFolder = new LocalMediaFolder();
@@ -462,9 +482,7 @@ public final class LocalMediaPageLoader {
                                 String firstUrl = SdkVersionUtils.checkedAndroid_Q() ? getFirstUri(data) : getFirstUrl(data);
                                 allMediaFolder.setFirstImagePath(firstUrl);
                             }
-                            String bucketDisplayName = config.chooseMode == PictureMimeType.ofAudio() ?
-                                    mContext.getString(R.string.picture_all_audio)
-                                    : mContext.getString(R.string.picture_camera_roll);
+                            String bucketDisplayName = config.chooseMode == PictureMimeType.ofAudio() ? mContext.getString(R.string.picture_all_audio) : mContext.getString(R.string.picture_camera_roll);
                             allMediaFolder.setName(bucketDisplayName);
                             allMediaFolder.setOfAllType(config.chooseMode);
                             allMediaFolder.setCameraFolder(true);
@@ -605,7 +623,7 @@ public final class LocalMediaPageLoader {
         return null;
     }
 
-
+    // 获取SQL语句
     private String getSelection() {
         switch (config.chooseMode) {
             case PictureConfig.TYPE_ALL:
@@ -676,7 +694,7 @@ public final class LocalMediaPageLoader {
             int lSize = lhs.getImageNum();
             int rSize = rhs.getImageNum();
             return Integer.compare(rSize, lSize);
-        });
+        }); // 直接用现有集合来排序
     }
 
     /**

@@ -96,7 +96,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     protected RecyclerPreloadView mRecyclerView;
     protected RelativeLayout mBottomLayout;
     protected PictureImageGridAdapter mAdapter;
-    protected FolderPopWindow folderWindow;
+    protected FolderPopWindow folderWindow; // 展开的PopupWindow
     protected Animation animation = null;
     protected boolean isStartAnimation = false;
     protected MediaPlayer mediaPlayer;
@@ -134,7 +134,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                     PermissionChecker
                             .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 if (mAdapter.isDataEmpty()) {
-                    readLocalMedia();
+                    readLocalMedia(); // 加载本地的图片
                 }
             } else {
                 showPermissionsDialog(false, getString(R.string.picture_jurisdiction));
@@ -156,21 +156,30 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
 
     @Override
     protected void initWidgets() {
-        super.initWidgets();
-        container = findViewById(R.id.container);
-        mTitleBar = findViewById(R.id.titleBar);
-        mIvPictureLeftBack = findViewById(R.id.pictureLeftBack);
-        mTvPictureTitle = findViewById(R.id.picture_title);
-        mTvPictureRight = findViewById(R.id.picture_right);
-        mTvPictureOk = findViewById(R.id.picture_tv_ok);
-        mCbOriginal = findViewById(R.id.cb_original);
-        mIvArrow = findViewById(R.id.ivArrow);
-        viewClickMask = findViewById(R.id.viewClickMask);
-        mTvPicturePreview = findViewById(R.id.picture_id_preview);
-        mTvPictureImgNum = findViewById(R.id.tv_media_num);
-        mRecyclerView = findViewById(R.id.picture_recycler);
-        mBottomLayout = findViewById(R.id.select_bar_layout);
-        mTvEmpty = findViewById(R.id.tv_empty);
+        super.initWidgets(); // 初始化一些控件
+        container = findViewById(R.id.container); // 整个的View
+
+        // R.layout.picture_title_bar
+        mTitleBar = findViewById(R.id.titleBar); //
+        mIvPictureLeftBack = findViewById(R.id.pictureLeftBack); // 左箭头
+        mTvPictureTitle = findViewById(R.id.picture_title); // 标题(相机交卷)
+        mIvArrow = findViewById(R.id.ivArrow); // 向下指向的箭头
+        mTvPictureRight = findViewById(R.id.picture_right); // 右边取消按钮
+        viewClickMask = findViewById(R.id.viewClickMask); // 专门用来点击的地方
+
+        // R.layout.picture_bottom_bar
+        mBottomLayout = findViewById(R.id.select_bar_layout); // 整个底部
+        mTvPictureOk = findViewById(R.id.picture_tv_ok); // 底部-请选择
+        mCbOriginal = findViewById(R.id.cb_original); // 底部-原图勾选功能
+        mTvPicturePreview = findViewById(R.id.picture_id_preview); // 底部-预览
+        mTvPictureImgNum = findViewById(R.id.tv_media_num);//选择的个数
+
+
+        mRecyclerView = findViewById(R.id.picture_recycler); // 中间选择的Grid列表
+
+        mTvEmpty = findViewById(R.id.tv_empty); // 当没有图片的时候 你可以使用相机拍摄照片或视频
+
+
         isNumComplete(numComplete);
         if (!numComplete) {
             animation = AnimationUtils.loadAnimation(this, R.anim.picture_anim_modal_in);
@@ -180,41 +189,45 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             mTitleBar.setOnClickListener(this);
         }
         mTvPicturePreview.setVisibility(config.chooseMode != PictureMimeType.ofAudio() && config.enablePreview ? View.VISIBLE : View.GONE);
-        mBottomLayout.setVisibility(config.selectionMode == PictureConfig.SINGLE
-                && config.isSingleDirectReturn ? View.GONE : View.VISIBLE);
-        mIvPictureLeftBack.setOnClickListener(this);
+        mBottomLayout.setVisibility(config.selectionMode == PictureConfig.SINGLE && config.isSingleDirectReturn ? View.GONE : View.VISIBLE);
+
+        mIvPictureLeftBack.setOnClickListener(this); // 左箭头
         mTvPictureRight.setOnClickListener(this);
         mTvPictureOk.setOnClickListener(this);
         viewClickMask.setOnClickListener(this);
         mTvPictureImgNum.setOnClickListener(this);
         mTvPictureTitle.setOnClickListener(this);
         mIvArrow.setOnClickListener(this);
-        String title = config.chooseMode == PictureMimeType.ofAudio() ?
-                getString(R.string.picture_all_audio) : getString(R.string.picture_camera_roll);
+
+        String title = config.chooseMode == PictureMimeType.ofAudio() ? getString(R.string.picture_all_audio) : getString(R.string.picture_camera_roll);
         mTvPictureTitle.setText(title);
         mTvPictureTitle.setTag(R.id.view_tag, -1);
-        folderWindow = new FolderPopWindow(this);
+
+        folderWindow = new FolderPopWindow(this); // 弹出的选择图片文件夹列表
         folderWindow.setArrowImageView(mIvArrow);
         folderWindow.setOnAlbumItemClickListener(this);
-        mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(config.imageSpanCount <= 0 ? PictureConfig.DEFAULT_SPAN_COUNT : config.imageSpanCount,
-                ScreenUtils.dip2px(this, 2), false));
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), config.imageSpanCount <= 0 ? PictureConfig.DEFAULT_SPAN_COUNT : config.imageSpanCount));
-        if (!config.isPageStrategy) {
-            mRecyclerView.setHasFixedSize(true);
-        } else {
-            mRecyclerView.setReachBottomRow(RecyclerPreloadView.BOTTOM_PRELOAD);
-            mRecyclerView.setOnRecyclerViewPreloadListener(PictureSelectorActivity.this);
-        }
-        RecyclerView.ItemAnimator itemAnimator = mRecyclerView.getItemAnimator();
-        if (itemAnimator != null) {
-            ((SimpleItemAnimator) itemAnimator).setSupportsChangeAnimations(false);
-            mRecyclerView.setItemAnimator(null);
-        }
-        loadAllMediaData();
-        mTvEmpty.setText(config.chooseMode == PictureMimeType.ofAudio() ?
-                getString(R.string.picture_audio_empty)
-                : getString(R.string.picture_empty));
+
+
+        initRecyclerView();// 初始化RecyclerView
+
+        loadAllMediaData(); // 加载所有图片资源
+
+        // 给空白文字加上文字
+        mTvEmpty.setText(config.chooseMode == PictureMimeType.ofAudio() ? getString(R.string.picture_audio_empty) : getString(R.string.picture_empty));
         StringUtils.tempTextFont(mTvEmpty, config.chooseMode);
+
+        initAdapter(); // 初始化Adapter
+
+        if (config.isOriginalControl) {
+            mCbOriginal.setVisibility(View.VISIBLE); // 原图勾选功能
+            mCbOriginal.setChecked(config.isCheckOriginalImage); // 是否被选中
+            mCbOriginal.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                config.isCheckOriginalImage = isChecked;
+            });
+        }
+    }
+
+    private void initAdapter() {
         mAdapter = new PictureImageGridAdapter(getContext(), config);
         mAdapter.setOnPhotoSelectChangedListener(this);
 
@@ -231,12 +244,22 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 mRecyclerView.setAdapter(mAdapter);
                 break;
         }
-        if (config.isOriginalControl) {
-            mCbOriginal.setVisibility(View.VISIBLE);
-            mCbOriginal.setChecked(config.isCheckOriginalImage);
-            mCbOriginal.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                config.isCheckOriginalImage = isChecked;
-            });
+    }
+
+    private void initRecyclerView() {
+        mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(config.imageSpanCount <= 0 ? PictureConfig.DEFAULT_SPAN_COUNT : config.imageSpanCount,
+                ScreenUtils.dip2px(this, 2), false));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), config.imageSpanCount <= 0 ? PictureConfig.DEFAULT_SPAN_COUNT : config.imageSpanCount));
+        if (!config.isPageStrategy) {
+            mRecyclerView.setHasFixedSize(true);
+        } else {
+            mRecyclerView.setReachBottomRow(RecyclerPreloadView.BOTTOM_PRELOAD);
+            mRecyclerView.setOnRecyclerViewPreloadListener(PictureSelectorActivity.this); //难道是预加载
+        }
+        RecyclerView.ItemAnimator itemAnimator = mRecyclerView.getItemAnimator();
+        if (itemAnimator != null) {
+            ((SimpleItemAnimator) itemAnimator).setSupportsChangeAnimations(false);
+            mRecyclerView.setItemAnimator(null);
         }
     }
 
@@ -303,10 +326,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
      * load All Data
      */
     private void loadAllMediaData() {
-        if (PermissionChecker
-                .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
-                PermissionChecker
-                        .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                && PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             readLocalMedia();
         } else {
             PermissionChecker.requestPermissions(this, new String[]{
@@ -316,7 +337,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     }
 
     @Override
-    public void initPictureSelectorStyle() {
+    public void initPictureSelectorStyle() {// 设置一些样式
         if (PictureSelectionConfig.uiStyle != null) {
             if (PictureSelectionConfig.uiStyle.picture_top_titleArrowDownDrawable != 0) {
                 Drawable drawable = ContextCompat.getDrawable(this, PictureSelectionConfig.uiStyle.picture_top_titleArrowDownDrawable);
@@ -704,27 +725,30 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     protected void readLocalMedia() {
         showPleaseDialog();
         if (config.isPageStrategy) {
-            LocalMediaPageLoader.getInstance(getContext()).loadAllMedia(
-                    (OnQueryDataResultListener<LocalMediaFolder>) (data, currentPage, isHasMore) -> {
-                        if (!isFinishing()) {
+            LocalMediaPageLoader.getInstance(getContext())
+                    .loadAllMedia((OnQueryDataResultListener<LocalMediaFolder>) (data, currentPage, isHasMore) -> {
+                        //List<LocalMediaFolder> data, int currentPage, boolean isHasMore
+                        if (!isFinishing()) { // Activity被销毁
                             this.isHasMore = true;
                             initPageModel(data);
                             synchronousCover();
                         }
                     });
         } else {
-            PictureThreadUtils.executeByIo(new PictureThreadUtils.SimpleTask<List<LocalMediaFolder>>() {
+            PictureThreadUtils.executeByIo(
+                    new PictureThreadUtils.SimpleTask<List<LocalMediaFolder>>() {
 
-                @Override
-                public List<LocalMediaFolder> doInBackground() {
-                    return new LocalMediaLoader(getContext()).loadAllMedia();
-                }
+                        @Override
+                        public List<LocalMediaFolder> doInBackground() {
+                            return new LocalMediaLoader(getContext()).loadAllMedia();
+                        }
 
-                @Override
-                public void onSuccess(List<LocalMediaFolder> folders) {
-                    initStandardModel(folders);
-                }
-            });
+                        @Override
+                        public void onSuccess(List<LocalMediaFolder> folders) {
+                            initStandardModel(folders);
+                        }
+                    }
+            );
         }
     }
 
@@ -741,9 +765,9 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             mTvPictureTitle.setTag(R.id.view_count_tag, folder != null ? folder.getImageNum() : 0);
             mTvPictureTitle.setTag(R.id.view_index_tag, 0);
             long bucketId = folder != null ? folder.getBucketId() : -1;
-            mRecyclerView.setEnabledLoadMore(true);
-            LocalMediaPageLoader.getInstance(getContext()).loadPageMediaData(bucketId, mPage,
-                    (OnQueryDataResultListener<LocalMedia>) (data, currentPage, isHasMore) -> {
+            mRecyclerView.setEnabledLoadMore(true);//
+            LocalMediaPageLoader.getInstance(getContext())
+                    .loadPageMediaData(bucketId, mPage, (OnQueryDataResultListener<LocalMedia>) (data, currentPage, isHasMore) -> {
                         if (!isFinishing()) {
                             dismissDialog();
                             if (mAdapter != null) {
@@ -952,8 +976,9 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.pictureLeftBack
-                || id == R.id.picture_right) {
+        if (id == R.id.pictureLeftBack // 左箭头
+                || id == R.id.picture_right) { // 右边取消按钮
+            // 要不folderWindow小时，要不回退
             if (folderWindow != null && folderWindow.isShowing()) {
                 folderWindow.dismiss();
             } else {
@@ -962,37 +987,42 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             return;
         }
 
-        if (id == R.id.picture_title || id == R.id.ivArrow || id == R.id.viewClickMask) {
+        if (id == R.id.picture_title // 标题（相机交卷）
+                || id == R.id.ivArrow // 向下指的箭头
+                || id == R.id.viewClickMask // 专门用来点击的区域
+        ) {
             if (folderWindow.isShowing()) {
                 folderWindow.dismiss();
             } else {
                 if (!folderWindow.isEmpty()) {
                     folderWindow.showAsDropDown(mTitleBar);
                     if (!config.isSingleDirectReturn) {
-                        List<LocalMedia> selectedImages = mAdapter.getSelectedData();
-                        folderWindow.updateFolderCheckStatus(selectedImages);
+                        List<LocalMedia> selectedImages = mAdapter.getSelectedData(); // 获取数据
+                        folderWindow.updateFolderCheckStatus(selectedImages);// 更新选中状态
                     }
                 }
             }
             return;
         }
 
-        if (id == R.id.picture_id_preview) {
+        if (id == R.id.picture_id_preview) { // 底部预览
             onPreview();
             return;
         }
 
-        if (id == R.id.picture_tv_ok || id == R.id.tv_media_num) {
-            onComplete();
+        if (id == R.id.picture_tv_ok // 底部-请选择
+                || id == R.id.tv_media_num //选择的个数
+        ) {
+            onComplete(); // 完成
             return;
         }
 
-        if (id == R.id.titleBar) {
+        if (id == R.id.titleBar) {// 整个TitleBar
             if (config.isAutomaticTitleRecyclerTop) {
                 int intervalTime = 500;
                 if (SystemClock.uptimeMillis() - intervalClickTime < intervalTime) {
                     if (mAdapter.getItemCount() > 0) {
-                        mRecyclerView.scrollToPosition(0);
+                        mRecyclerView.scrollToPosition(0); // 滚动到最顶部
                     }
                 } else {
                     intervalClickTime = SystemClock.uptimeMillis();
@@ -1128,7 +1158,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             if (config.selectionMode == PictureConfig.SINGLE && isHasImage) {
                 config.originalPath = image.getPath();
                 UCropManager.ofCrop(this, config.originalPath, image.getMimeType());
-            } else {
+            } else { // 多选，先转换成裁剪需要的格式
                 ArrayList<CutInfo> cuts = new ArrayList<>();
                 int count = images.size();
                 int imageNum = 0;

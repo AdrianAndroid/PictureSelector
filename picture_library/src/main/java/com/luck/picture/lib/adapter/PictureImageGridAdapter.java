@@ -76,7 +76,11 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.notifyDataSetChanged();
     }
 
-
+    /**
+     * 重新选中数据
+     *
+     * @param images
+     */
     public void bindSelectData(List<LocalMedia> images) {
         // 这里重新构构造一个新集合，不然会产生已选集合一变，结果集合也会添加的问题
         List<LocalMedia> selection = new ArrayList<>();
@@ -135,10 +139,10 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == PictureConfig.TYPE_CAMERA) {
+        if (viewType == PictureConfig.TYPE_CAMERA) { // 照相机拍摄按钮
             View view = LayoutInflater.from(context).inflate(R.layout.picture_item_camera, parent, false);
             return new CameraViewHolder(view);
-        } else {
+        } else { // 其他普通显示
             View view = LayoutInflater.from(context).inflate(R.layout.picture_image_grid_item, parent, false);
             return new ViewHolder(view);
         }
@@ -767,8 +771,7 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
      *
      * @param imageSelectChangedListener
      */
-    public void setOnPhotoSelectChangedListener(OnPhotoSelectChangedListener
-                                                        imageSelectChangedListener) {
+    public void setOnPhotoSelectChangedListener(OnPhotoSelectChangedListener imageSelectChangedListener) {
         this.imageSelectChangedListener = imageSelectChangedListener;
     }
 }

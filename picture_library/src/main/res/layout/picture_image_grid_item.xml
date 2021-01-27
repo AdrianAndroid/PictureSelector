@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.luck.picture.lib.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:contentDescription="这个是要显示的视频/普通的内容">
 
     <ImageView
         android:id="@+id/ivPicture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        tools:background="@android:drawable/ic_lock_lock" />
 
     <TextView
         android:id="@+id/tvCheck"
@@ -15,8 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_margin="8dp"
-        android:gravity="center"
         android:background="@drawable/picture_checkbox_selector"
+        android:gravity="center"
         android:textColor="@color/picture_color_white"
         android:textSize="12sp" />
 
@@ -37,7 +40,8 @@
         android:text="@string/picture_gif_tag"
         android:textColor="@color/picture_color_white"
         android:textSize="11sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/tv_long_chart"
@@ -49,7 +53,8 @@
         android:text="@string/picture_long_chart"
         android:textColor="@color/picture_color_white"
         android:textSize="11sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/tv_duration"
@@ -65,5 +70,6 @@
         android:text="00:00"
         android:textColor="@color/picture_color_white"
         android:textSize="11sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 </com.luck.picture.lib.widget.SquareRelativeLayout>

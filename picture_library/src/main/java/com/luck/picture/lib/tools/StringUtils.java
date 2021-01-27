@@ -21,9 +21,7 @@ public class StringUtils {
 
     public static void tempTextFont(TextView tv, int mimeType) {
         String text = tv.getText().toString().trim();
-        String str = mimeType == PictureMimeType.ofAudio() ?
-                tv.getContext().getString(R.string.picture_empty_audio_title)
-                : tv.getContext().getString(R.string.picture_empty_title);
+        String str = mimeType == PictureMimeType.ofAudio() ? tv.getContext().getString(R.string.picture_empty_audio_title) : tv.getContext().getString(R.string.picture_empty_title);
         String sumText = str + text;
         Spannable placeSpan = new SpannableString(sumText);
         placeSpan.setSpan(new RelativeSizeSpan(0.8f), str.length(), sumText.length(),

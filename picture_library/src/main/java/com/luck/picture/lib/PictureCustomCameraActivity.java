@@ -45,6 +45,7 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 设置全屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -87,8 +88,8 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
      * 创建CameraView
      */
     private void createCameraView() {
-        if (mCameraView == null) {
-            mCameraView = new CustomCameraView(getContext());
+        if (mCameraView == null) { // 创建一个View
+            mCameraView = new CustomCameraView(getContext());// 创建一个View
             setContentView(mCameraView);
             initView();
         }

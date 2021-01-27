@@ -1302,7 +1302,7 @@ public class PictureSelectionModel {
             Intent intent;
             if (selectionConfig.camera && selectionConfig.isUseCustomCamera) {
                 intent = new Intent(activity, PictureCustomCameraActivity.class);
-            } else {
+            } else { // 没有摄像头的浏览界面
                 intent = new Intent(activity, selectionConfig.camera
                         ? PictureSelectorCameraEmptyActivity.class :
                         selectionConfig.isWeChatStyle ? PictureSelectorWeChatStyleActivity.class
@@ -1358,15 +1358,15 @@ public class PictureSelectionModel {
      */
     public void forResult(OnResultCallbackListener listener) {
         if (!DoubleUtils.isFastDoubleClick()) {
-            Activity activity = selector.getActivity();
+            Activity activity = selector.getActivity(); // 获取Activity上下文环境
             if (activity == null || selectionConfig == null) {
                 return;
             }
             // 绑定回调监听
-            PictureSelectionConfig.listener = new WeakReference<>(listener).get();
-            selectionConfig.isCallbackMode = true;
+            PictureSelectionConfig.listener = new WeakReference<>(listener).get(); // 绑定监听
+            selectionConfig.isCallbackMode = true; // 是callback模式
             Intent intent;
-            if (selectionConfig.camera && selectionConfig.isUseCustomCamera) {
+            if (selectionConfig.camera && selectionConfig.isUseCustomCamera) { // 带有相机模式的
                 intent = new Intent(activity, PictureCustomCameraActivity.class);
             } else {
                 intent = new Intent(activity, selectionConfig.camera
@@ -1374,13 +1374,13 @@ public class PictureSelectionModel {
                         selectionConfig.isWeChatStyle ? PictureSelectorWeChatStyleActivity.class
                                 : PictureSelectorActivity.class);
             }
-            Fragment fragment = selector.getFragment();
+            Fragment fragment = selector.getFragment(); // 启动Activity
             if (fragment != null) {
                 fragment.startActivity(intent);
             } else {
                 activity.startActivity(intent);
             }
-            PictureWindowAnimationStyle windowAnimationStyle = PictureSelectionConfig.windowAnimationStyle;
+            PictureWindowAnimationStyle windowAnimationStyle = PictureSelectionConfig.windowAnimationStyle;// 自定义相册启动退出动画
             activity.overridePendingTransition(
                     windowAnimationStyle.activityEnterAnimation, R.anim.picture_anim_fade_in);
         }

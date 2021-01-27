@@ -31,96 +31,96 @@ import java.util.List;
  */
 
 public final class PictureSelectionConfig implements Parcelable {
-    public int chooseMode;
+    public int chooseMode; //全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
     public boolean camera;
-    public boolean isSingleDirectReturn;
+    public boolean isSingleDirectReturn;// 单选模式下是否直接返回，PictureConfig.SINGLE模式下有效
     public static PictureSelectorUIStyle uiStyle;
-    public static PictureParameterStyle style;
-    public static PictureCropParameterStyle cropStyle;
-    public static PictureWindowAnimationStyle windowAnimationStyle = PictureWindowAnimationStyle.ofDefaultWindowAnimationStyle();
-    public String compressSavePath;
-    public String suffixType;
+    public static PictureParameterStyle style; // 动态自定义相册主题
+    public static PictureCropParameterStyle cropStyle; // 动态自定义裁剪主题
+    public static PictureWindowAnimationStyle windowAnimationStyle = PictureWindowAnimationStyle.ofDefaultWindowAnimationStyle();// 自定义相册启动退出动画
+    public String compressSavePath;//压缩图片保存地址
+    public String suffixType;// 拍照保存图片格式后缀,默认jpeg
     public boolean focusAlpha;
-    public String renameCompressFileName;
-    public String renameCropFileName;
-    public String specifiedFormat;
-    public int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+    public String renameCompressFileName;// 重命名压缩文件名、 注意这个不要重复，只适用于单张图压缩使用
+    public String renameCropFileName;// 重命名裁剪文件名、 注意这个不要重复，只适用于单张图裁剪使用
+    public String specifiedFormat;// 查询指定后缀格式资源
+    public int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;// 设置相册Activity方向，不设置默认使用系统
     public int buttonFeatures = CustomCameraView.BUTTON_STATE_BOTH;
     public boolean isCameraAroundState;
-    public boolean isAndroidQTransform;
+    public boolean isAndroidQTransform;// 是否需要处理Android Q 拷贝至应用沙盒的操作，只针对.isCompress(false); && .isEnableCrop(false);有效,默认处理
     @StyleRes
-    public int themeStyleId;
-    public int selectionMode;
-    public int maxSelectNum;
-    public int minSelectNum;
-    public int maxVideoSelectNum = 1;
-    public int minVideoSelectNum;
-    public int videoQuality;
-    public int cropCompressQuality;
+    public int themeStyleId; // 主题样式
+    public int selectionMode;// 多选 or 单选
+    public int maxSelectNum;// 最大图片选择数量
+    public int minSelectNum;// 最小图片选择数量
+    public int maxVideoSelectNum = 1; // 视频最大选择数量，如果没有单独设置的需求则可以不设置，同用maxSelectNum字段
+    public int minVideoSelectNum; // 视频最小选择数量，如果没有单独设置的需求则可以不设置
+    public int videoQuality;// 视频录制质量 0 or 1
+    public int cropCompressQuality;// 裁剪输出质量 默认100
     public int videoMaxSecond;
     public int videoMinSecond;
-    public int recordVideoSecond;
+    public int recordVideoSecond;//录制视频秒数 默认60s
     public int recordVideoMinSecond;
-    public int minimumCompressSize = PictureConfig.MAX_COMPRESS_SIZE;
-    public int imageSpanCount = PictureConfig.DEFAULT_SPAN_COUNT;
-    public int aspect_ratio_x;
-    public int aspect_ratio_y;
+    public int minimumCompressSize = PictureConfig.MAX_COMPRESS_SIZE;// 小于100kb的图片不压缩
+    public int imageSpanCount = PictureConfig.DEFAULT_SPAN_COUNT;// 每行显示个数
+    public int aspect_ratio_x;// 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+    public int aspect_ratio_y;// 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
     public int cropWidth;
     public int cropHeight;
-    public int compressQuality;
-    public float filterFileSize;
-    public int language;
+    public int compressQuality;// 图片压缩后输出质量 0~ 100
+    public float filterFileSize;// 只查多少M以内的图片、视频、音频  单位M
+    public int language; // 设置语言
     public boolean isMultipleRecyclerAnimation;
-    public boolean isMultipleSkipCrop;
-    public boolean isWeChatStyle;
-    public boolean isUseCustomCamera;
-    public boolean zoomAnim;
-    public boolean isCompress;
-    public boolean isOriginalControl;
-    public boolean isCamera;
-    public boolean isGif;
+    public boolean isMultipleSkipCrop;// 多图裁剪时是否支持跳过，默认支持
+    public boolean isWeChatStyle; // 是否是微信风格
+    public boolean isUseCustomCamera; //是否使用自定义相机
+    public boolean zoomAnim;// 图片列表点击 缩放效果 默认true
+    public boolean isCompress;// 是否压缩
+    public boolean isOriginalControl;// 是否显示原图控制按钮，如果设置为true则用户可以自由选择是否使用原图，压缩、裁剪功能将会失效
+    public boolean isCamera;// 是否显示拍照按钮
+    public boolean isGif;// 是否显示gif图片
     public boolean isWebp;
     public boolean isBmp;
-    public boolean enablePreview;
-    public boolean enPreviewVideo;
-    public boolean enablePreviewAudio;
+    public boolean enablePreview;// 是否可预览图片
+    public boolean enPreviewVideo;// 是否可预览视频
+    public boolean enablePreviewAudio;// 是否可播放音频
     public boolean checkNumMode;
-    public boolean openClickSound;
-    public boolean enableCrop;
-    public boolean freeStyleCropEnabled;
-    public boolean circleDimmedLayer;
+    public boolean openClickSound;// 是否开启点击声音
+    public boolean enableCrop;// 是否裁剪
+    public boolean freeStyleCropEnabled;// 裁剪框是否可拖拽
+    public boolean circleDimmedLayer;// 是否圆形裁剪
     @ColorInt
-    public int circleDimmedColor;
+    public int circleDimmedColor;// 设置圆形裁剪背景色值
     @ColorInt
-    public int circleDimmedBorderColor;
-    public int circleStrokeWidth;
-    public boolean showCropFrame;
-    public boolean showCropGrid;
-    public boolean hideBottomControls;
-    public boolean rotateEnabled;
-    public boolean scaleEnabled;
-    public boolean previewEggs;
-    public boolean synOrAsy;
-    public boolean returnEmpty;
-    public boolean isDragFrame;
+    public int circleDimmedBorderColor;// 设置圆形裁剪边框色值
+    public int circleStrokeWidth;// 设置圆形裁剪边框粗细
+    public boolean showCropFrame;// 是否显示裁剪矩形边框 圆形裁剪时建议设为false
+    public boolean showCropGrid;// 是否显示裁剪矩形网格 圆形裁剪时建议设为false
+    public boolean hideBottomControls;// 是否显示uCrop工具栏，默认不显示
+    public boolean rotateEnabled;// 裁剪是否可旋转图片
+    public boolean scaleEnabled;// 裁剪是否可放大缩小图片
+    public boolean previewEggs;// 预览图片时 是否增强左右滑动图片体验(图片滑动一半即可看到上一张是否选中)
+    public boolean synOrAsy;//同步false或异步true 压缩 默认同步
+    public boolean returnEmpty;// 未选择数据时点击按钮是否可以返回
+    public boolean isDragFrame;// 是否可拖动裁剪框(固定
     public boolean isNotPreviewDownload;
-    public boolean isWithVideoImage;
+    public boolean isWithVideoImage;// 图片和视频是否可以同选
     public UCropOptions uCropOptions;
-    public static ImageEngine imageEngine;
-    public static CacheResourcesEngine cacheResourcesEngine;
+    public static ImageEngine imageEngine; // 加载图片的引擎
+    public static CacheResourcesEngine cacheResourcesEngine;// 获取图片资源缓存，主要是解决华为10部分机型在拷贝文件过多时会出现卡的问题，这里可以判断只在会出现一直转圈问题机型上使用
     public static OnResultCallbackListener listener;
     public static OnVideoSelectedPlayCallback customVideoPlayCallback;
     public static OnCustomImagePreviewCallback onCustomImagePreviewCallback;
     public static OnCustomCameraInterfaceListener onCustomCameraInterfaceListener;
     public List<LocalMedia> selectionMedias;
-    public String cameraFileName;
+    public String cameraFileName;// 重命名拍照文件名、注意这个只在使用相机时可以使用，如果使用相机又开启了压缩或裁剪 需要配合压缩和裁剪文件名api
     public boolean isCheckOriginalImage;
     @Deprecated
-    public int overrideWidth;
+    public int overrideWidth;// glide 加载宽高，越小图片列表越流畅，但会影响列表图片浏览的清晰度 注：已废弃
     @Deprecated
-    public int overrideHeight;
+    public int overrideHeight;// glide 加载宽高，越小图片列表越流畅，但会影响列表图片浏览的清晰度 注：已废弃
     @Deprecated
-    public float sizeMultiplier;
+    public float sizeMultiplier;// glide 加载图片大小 0~1之间 如设置 .glideOverride()无效 注：已废弃
     @Deprecated
     public boolean isChangeStatusBarFontColor;
     @Deprecated
@@ -152,7 +152,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public boolean isMaxSelectEnabledMask;
     public int animationMode;
     public boolean isAutomaticTitleRecyclerTop;
-    public boolean isCallbackMode;
+    public boolean isCallbackMode; // callback模式
     public boolean isAndroidQChangeWH;
     public boolean isAndroidQChangeVideoWH;
     public boolean isQuickCapture;

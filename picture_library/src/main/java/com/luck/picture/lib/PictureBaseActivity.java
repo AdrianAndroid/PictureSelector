@@ -101,7 +101,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
     }
 
 
-    public void immersive() {
+    public void immersive() { // 沉浸式加载
         ImmersiveManage.immersiveAboveAPI23(this
                 , colorPrimaryDark
                 , colorPrimary
@@ -147,26 +147,26 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         config = PictureSelectionConfig.getInstance();
-        PictureLanguageUtils.setAppLanguage(getContext(), config.language);
-        if (!config.camera) {
+        PictureLanguageUtils.setAppLanguage(getContext(), config.language); // 设置App的语言
+        if (!config.camera) { // 设置样式
             setTheme(config.themeStyleId == 0 ? R.style.picture_default_style : config.themeStyleId);
         }
         super.onCreate(savedInstanceState);
-        newCreateEngine();
+        newCreateEngine(); // 创建图片的加载引擎
         newCreateResultCallbackListener();
-        if (isRequestedOrientation()) {
+        if (isRequestedOrientation()) { // 是否需要调整方向
             setNewRequestedOrientation();
         }
-        mHandler = new Handler(Looper.getMainLooper());
-        initConfig();
-        if (isImmersive()) {
+        mHandler = new Handler(Looper.getMainLooper()); // 使用Handler
+        initConfig(); // 配置
+        if (isImmersive()) {//是否为沉侵模式，并且不能被通知打断
             immersive();
         }
         if (PictureSelectionConfig.uiStyle != null) {
             if (PictureSelectionConfig.uiStyle.picture_navBarColor != 0) {
                 NavBarUtils.setNavBarColor(this, PictureSelectionConfig.uiStyle.picture_navBarColor);
             }
-        } else if (PictureSelectionConfig.style != null) {
+        } else if (PictureSelectionConfig.style != null) { // PictureParameterStyle 类似这样
             if (PictureSelectionConfig.style.pictureNavBarColor != 0) {
                 NavBarUtils.setNavBarColor(this, PictureSelectionConfig.style.pictureNavBarColor);
             }
@@ -181,7 +181,8 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
     }
 
     /**
-     * Get the image loading engine again, provided that the user implements the IApp interface in the Application
+     * Get the image loading engine again, provided that the user implements the IApp interface in the Application¸
+     * 创建图片的加载引擎
      */
     private void newCreateEngine() {
         if (PictureSelectionConfig.imageEngine == null) {
@@ -194,7 +195,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
      * Retrieve the result callback listener, provided that the user implements the IApp interface in the Application
      */
     private void newCreateResultCallbackListener() {
-        if (config.isCallbackMode) {
+        if (config.isCallbackMode) { // 要是通过回调方法的方式的话
             if (PictureSelectionConfig.listener == null) {
                 PictureSelectorEngine baseEngine = PictureAppMaster.getInstance().getPictureSelectorEngine();
                 if (baseEngine != null) {
@@ -443,8 +444,9 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
      * @param result
      */
     protected void handlerResult(List<LocalMedia> result) {
-        if (config.isCompress
-                && !config.isCheckOriginalImage) {
+        if (config.isCompress // 是否压缩图片
+                && !config.isCheckOriginalImage // 不显示原图
+        ) {
             compressImage(result);
         } else {
             onResult(result);

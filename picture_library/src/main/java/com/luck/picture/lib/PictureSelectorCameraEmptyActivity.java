@@ -50,16 +50,14 @@ public class PictureSelectorCameraEmptyActivity extends PictureBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (config == null) {
+        if (config == null) { // 没有配置就不要启动了
             exit();
             return;
         }
-        if (!config.isUseCustomCamera) {
+        if (!config.isUseCustomCamera) { // 不使用摄像头的时候
             if (savedInstanceState == null) {
-                if (PermissionChecker
-                        .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
-                        PermissionChecker
-                                .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                if (PermissionChecker.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        && PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
                     if (PictureSelectionConfig.onCustomCameraInterfaceListener != null) {
                         if (config.chooseMode == PictureConfig.TYPE_VIDEO) {
@@ -68,14 +66,15 @@ public class PictureSelectorCameraEmptyActivity extends PictureBaseActivity {
                             PictureSelectionConfig.onCustomCameraInterfaceListener.onCameraClick(getContext(), config, PictureConfig.TYPE_IMAGE);
                         }
                     } else {
-                        onTakePhoto();
+                        onTakePhoto(); // 获取照片
                     }
-                } else {
+                } else { // 没有权限，去申请权限
                     PermissionChecker.requestPermissions(this, new String[]{
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE}, PictureConfig.APPLY_STORAGE_PERMISSIONS_CODE);
                 }
             }
+            // 设置主题
             setTheme(R.style.Picture_Theme_Translucent);
         }
     }
